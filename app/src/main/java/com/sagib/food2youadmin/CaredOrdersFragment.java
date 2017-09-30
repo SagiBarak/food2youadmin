@@ -3,11 +3,13 @@ package com.sagib.food2youadmin;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
@@ -19,10 +21,14 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -93,9 +99,9 @@ public class CaredOrdersFragment extends Fragment {
         setTitle("ניהול - ג׳חנון ביתי עד הבית");
     }
 
-    public void setTitle(String title){
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    public void setTitle(String title) {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TextView textView = new TextView(getActivity());
         textView.setText(title);
         textView.setTextSize(20);
@@ -103,8 +109,8 @@ public class CaredOrdersFragment extends Fragment {
         textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Color.WHITE);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setCustomView(textView);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setCustomView(textView);
     }
 
     public static class NewOrdersAdapter extends FirebaseRecyclerAdapter<Order, NewOrdersAdapter.NewOrdersViewHolder> {
@@ -138,6 +144,32 @@ public class CaredOrdersFragment extends Fragment {
                     fixedOrderDetailedFragment.show(fragment.getFragmentManager(), "Detailed");
                 }
             });
+            viewHolder.ivDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getContext());
+                    builder.setMessage("האם למחוק את ההזמנה?").setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).setPositiveButton("כן", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FirebaseDatabase.getInstance().getReference("Orders").child("Fixed").child(model.getOrderUID()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(fragment.getContext(), "ההזמנה נמחקה", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(fragment.getContext(), "לא ניתן למחוק את ההזמנה!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
+                    }).show();
+                }
+            });
         }
 
         public static class NewOrdersViewHolder extends RecyclerView.ViewHolder {
@@ -148,6 +180,7 @@ public class CaredOrdersFragment extends Fragment {
             TextView tvTotalProducts;
             TextView tvNotes;
             TextView tvOrderNumber;
+            ImageView ivDelete;
 
             public NewOrdersViewHolder(View itemView) {
                 super(itemView);
@@ -157,6 +190,7 @@ public class CaredOrdersFragment extends Fragment {
                 tvTotalCost = (TextView) itemView.findViewById(R.id.tvTotalCost);
                 tvTotalProducts = (TextView) itemView.findViewById(R.id.tvTotalProducts);
                 tvOrderNumber = (TextView) itemView.findViewById(R.id.tvOrderNumber);
+                ivDelete = (ImageView) itemView.findViewById(R.id.ivDelete);
             }
         }
     }

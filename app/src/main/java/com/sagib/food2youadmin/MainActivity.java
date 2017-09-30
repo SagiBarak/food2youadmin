@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("SagiB", "here");
             } else if (sectionNumber == 2) {
                 fragment = new CaredOrdersFragment();
+            } else if (sectionNumber == 3) {
+                fragment = new SettingsFragment();
             }
             return fragment;
         }
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -129,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
                     return "הזמנות חדשות";
                 case 1:
                     return "הזמנות שטופלו";
+                case 2:
+                    return "הגדרות";
             }
             return null;
         }
