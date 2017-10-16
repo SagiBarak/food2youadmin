@@ -158,7 +158,7 @@ public class NewOrdersFragment extends Fragment {
                     }).setPositiveButton("כן", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            FirebaseDatabase.getInstance().getReference("Orders").child("Fixed").child(model.getOrderUID()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            FirebaseDatabase.getInstance().getReference("Orders").child("New").child(model.getOrderUID()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {

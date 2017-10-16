@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -29,7 +30,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format("הזמנה חדשה מספר %s עבור %s לכתובת %s %s, %s.\nמוזמן לשעה %s בתאריך %s\nתאריך הזמנה: %s.\nהערות: %s", orderNumber, fullName, address, houseNumber, city, futureHour, futureDate, orderTime, notes)))
                 .setSmallIcon(R.drawable.alogo)
                 .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
+                .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime))
                 .setContentIntent(pi);
         NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mgr.notify(1, builder.build());
